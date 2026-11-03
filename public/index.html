@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ben's Bowls</title>
+  <meta name="description" content="Ben's Bowls - play Retro Bowl and Retro Bowl College with automatic saving.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="field">
+    <header class="hero">
+      <h1>BEN'S BOWLS</h1>
+      <p><span class="ball" aria-hidden="true">🏈</span> Pick a game. Your progress saves automatically. <span class="ball" aria-hidden="true">🏈</span></p>
+    </header>
+  </div>
+
+  <main>
+    <h2 class="section-title">Choose your game</h2>
+    <div class="games" id="games"><p>Loading…</p></div>
+
+    <h2 class="section-title">Your saves</h2>
+    <div class="panel">
+      <h3>Saved on this device</h3>
+      <p>Every time the game saves, it's kept in this browser. Download a backup to keep it safe, or to move it to another computer.</p>
+      <div id="save-rows"></div>
+    </div>
+
+    <div class="panel" id="cloud-panel" hidden>
+      <h3>Cloud saves</h3>
+      <div id="cloud-body"></div>
+    </div>
+
+    <input type="file" id="import-file" accept="application/json,.json" hidden>
+  </main>
+
+  <footer>Ben's Bowls · saves stay in your browser unless you turn on cloud saves</footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/js/menu.js"></script>
+</body>
+</html>

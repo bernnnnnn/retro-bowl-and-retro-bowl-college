@@ -1,0 +1,16 @@
+{
+  "name": "bens-bowls",
+  "version": "1.0.0",
+  "description": "Ben's Bowls - a game menu for Retro Bowl and Retro Bowl College with automatic saving.",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

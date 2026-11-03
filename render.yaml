@@ -1,0 +1,21 @@
+# Render Blueprint for Ben's Bowls.
+# Render dashboard -> New -> Blueprint -> pick this repo, and it sets everything up.
+services:
+  - type: web
+    name: bens-bowls
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+    # Optional: cloud saves (play on any device with a save code).
+    # Needs a paid instance with a persistent disk. Uncomment these lines,
+    # change "plan: free" above to "plan: starter", and redeploy.
+    # disk:
+    #   name: saves
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # (then also add an env var DATA_DIR = /var/data)
