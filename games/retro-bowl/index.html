@@ -82,9 +82,6 @@
 
 <script>
     // Start the game once the page has loaded.
-    // The game's code still checks these two values, so they stay (set to "no SDK").
-    window.PokiSDK = null;
-    window.PokiSDK_OK = false;
     window.addEventListener("load", function () {
         if (typeof GameMaker_Init !== "function") {
             document.body.innerHTML = '<div style="font-family:sans-serif;color:#eee;padding:2em">' +
