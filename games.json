@@ -3,12 +3,18 @@
     "id": "retro-bowl",
     "title": "Retro Bowl",
     "tagline": "Run a pro team. Win the big game.",
-    "color": "#e94f37"
+    "color": "#e94f37",
+    "url": "https://poki.com/en/g/retro-bowl",
+    "urlLabel": "Poki",
+    "embeddable": false
   },
   {
     "id": "retro-bowl-college",
     "title": "Retro Bowl College",
     "tagline": "Recruit, study, and win on campus.",
-    "color": "#3a86ff"
+    "color": "#3a86ff",
+    "url": "https://poki.com/en/g/retro-bowl-college",
+    "urlLabel": "Poki",
+    "embeddable": false
   }
 ]

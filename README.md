@@ -13,24 +13,22 @@ A small website with a menu for **Retro Bowl** and **Retro Bowl College**. It sa
 | `public/` | The menu, the play page, and the save system |
 | `render.yaml` | One-click setup for Render |
 
-## 1. Add the game files
+## 1. The games
 
-The game files are **not included**. Retro Bowl and Retro Bowl College belong to New Star Games, so you need to supply HTML5 builds you're allowed to use.
+Out of the box, both menu cards open the **official free versions on Poki** (by New Star Games) in a new tab. Poki doesn't allow its games to be shown inside other websites, so they can't play inside Ben's Bowls itself. Your progress saves automatically in your browser on Poki.
 
-Copy each game's HTML5 files into its folder so you end up with:
+The links live in `games.json` (`"url"`). To host a game on this site instead, put an HTML5 build you're allowed to use into its folder:
 
 ```
 games/retro-bowl/index.html            (plus its other files and folders)
 games/retro-bowl-college/index.html    (plus its other files and folders)
 ```
 
-Commit and push them to GitHub. If a game's folder is empty, the menu shows "Game files not added yet" for that game.
-
-> Want a game to load from another website instead? Add `"url": "https://..."` to that game in `games.json`. That site keeps its own saves, so the backup and cloud features won't work for that game.
+When `index.html` is there, that game plays inside Ben's Bowls automatically, instead of opening Poki. It then gets the save features from section 3: the save indicator, Backup/Load file, and cloud saves.
 
 ## 2. Put it on Render (onrender.com)
 
-1. Push this repo to GitHub. Make sure the branch you deploy has the game files in it.
+1. Push this repo to GitHub.
 2. Go to <https://render.com> and sign up or log in. Signing in with GitHub is easiest.
 3. Click **New +** → **Blueprint**.
 4. Pick this repository (`retro-bowl-and-retro-bowl-college`) and click **Connect**. If it isn't listed, click "Configure account" and give Render access to the repo.
@@ -40,7 +38,7 @@ Commit and push them to GitHub. If a game's folder is empty, the menu shows "Gam
 **Doing it by hand instead of with a Blueprint:** click **New +** → **Web Service**, pick the repo, then set:
 - **Name:** `bens-bowls`
 - **Language / Runtime:** Node
-- **Branch:** the branch with your game files
+- **Branch:** the branch you want to deploy
 - **Build Command:** `npm install`
 - **Start Command:** `npm start`
 - **Instance Type:** Free
@@ -51,7 +49,7 @@ Then click **Create Web Service**.
 
 **Free plan note:** the free plan goes to sleep after about 15 minutes with no visitors. The first visit after that takes 30–60 seconds to load. This does **not** affect saves.
 
-## 3. How saving works
+## 3. How saving works (games hosted on this site)
 
 - **Automatic:** when the game saves (just like on the real game), the data is kept in your browser on this site. Close the tab, come back tomorrow, and click **Continue**. The bar at the top of the play page shows when it last saved.
 - **Each game has its own save.** Retro Bowl and Retro Bowl College can't overwrite each other.

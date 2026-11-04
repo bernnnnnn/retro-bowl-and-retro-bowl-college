@@ -37,7 +37,8 @@ async function renderGames() {
       saveText = 'Game files not added yet';
       dot = 'bad';
     } else if (info.external) {
-      saveText = 'Saves are kept by the game host';
+      saveText = `Official version on ${g.urlLabel || 'the web'} · saves automatically in this browser`;
+      dot = 'good';
     } else if (info.has) {
       saveText = `Save found · last saved ${timeAgo(info.meta.updatedAt)}`;
       dot = 'good';
@@ -53,7 +54,9 @@ async function renderGames() {
         <h2>${esc(g.title)}</h2>
         <p class="tagline">${esc(g.tagline || '')}</p>
         <p class="save-line"><span class="dot ${dot}"></span>${esc(saveText)}</p>
-        <a class="btn play" href="/play?game=${encodeURIComponent(g.id)}">${info.has ? '▶ CONTINUE' : '▶ PLAY'}</a>
+        ${g.external && !g.embeddable
+          ? `<a class="btn play" href="${esc(g.src)}" target="_blank" rel="noopener">▶ PLAY ↗</a>`
+          : `<a class="btn play" href="/play?game=${encodeURIComponent(g.id)}">${info.has ? '▶ CONTINUE' : '▶ PLAY'}</a>`}
       </div>`;
     box.appendChild(card);
   }
@@ -91,6 +94,9 @@ async function renderSaves() {
     };
     box.appendChild(row);
   }
+  if (!box.children.length) {
+    box.innerHTML = '<p>Both games are playing their official versions, which save automatically in this browser on their own site. Download, load and cloud backups appear here for games whose files are hosted on this site.</p>';
+  }
 }
 
 function importInto(game) {
@@ -124,8 +130,8 @@ function importInto(game) {
 // --------------------------------------------------------------- cloud UI
 async function renderCloud() {
   const panel = $('#cloud-panel');
-  panel.hidden = !cloudOn;
-  if (!cloudOn) return;
+  panel.hidden = !cloudOn || games.every((g) => g.external);
+  if (panel.hidden) return;
   const body = $('#cloud-body');
   const code = cloud.getCode();
   if (code) {

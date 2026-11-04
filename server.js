@@ -32,12 +32,18 @@ app.get('/api/games', (req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({
     cloudSaves: Boolean(SAVES_DIR),
-    games: GAMES.map((g) => ({
-      ...g,
-      installed: g.url ? true : isInstalled(g),
-      src: g.url || `/games/${g.id}/`,
-      external: Boolean(g.url),
-    })),
+    // Game files in games/<id>/ win; otherwise fall back to the game's official "url".
+    games: GAMES.map((g) => {
+      const local = isInstalled(g);
+      const external = !local && Boolean(g.url);
+      return {
+        ...g,
+        installed: local || external,
+        src: external ? g.url : `/games/${g.id}/`,
+        external,
+        embeddable: external ? g.embeddable !== false : true,
+      };
+    }),
   });
 });
 
@@ -225,6 +231,6 @@ app.listen(PORT, () => {
   console.log(`Ben's Bowls running on http://localhost:${PORT}`);
   console.log(SAVES_DIR ? `Cloud saves ON (${SAVES_DIR})` : 'Cloud saves OFF (set DATA_DIR to enable)');
   for (const g of GAMES) {
-    if (!g.url && !isInstalled(g)) console.log(`  ! ${g.title}: no files in games/${g.id}/ yet`);
+    if (!isInstalled(g)) console.log(g.url ? `  ${g.title}: using official version at ${g.url}` : `  ! ${g.title}: no files in games/${g.id}/ yet`);
   }
 });

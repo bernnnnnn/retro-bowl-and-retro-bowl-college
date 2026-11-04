@@ -130,6 +130,17 @@ async function start() {
     return;
   }
 
+  if (game.external && !game.embeddable) {
+    // The official site doesn't allow being shown inside other sites.
+    $('#backup').disabled = true;
+    setStatus('Saves on official site');
+    showNotice(`<h2>${esc(game.title)}</h2>
+      <p>This plays the official version on ${esc(game.urlLabel || 'its own site')}, which opens in a new tab.
+      Your progress saves automatically in this browser there.</p>
+      <p><a class="btn play" href="${esc(game.src)}" target="_blank" rel="noopener">▶ PLAY ↗</a></p>
+      <p><a href="/">Back to the menu</a></p>`);
+    return;
+  }
   if (game.external) {
     $('#backup').disabled = true;
     setStatus('Saves kept by game host');
