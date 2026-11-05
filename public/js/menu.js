@@ -53,7 +53,7 @@ async function renderGames() {
         <h2>${esc(g.title)}</h2>
         <p class="tagline">${esc(g.tagline || '')}</p>
         <p class="save-line"><span class="dot ${dot}"></span>${esc(saveText)}</p>
-        <a class="btn play" href="/play?game=${encodeURIComponent(g.id)}">${info.has ? '▶ CONTINUE' : '▶ PLAY'}</a>
+        <a class="btn play" href="/play/${encodeURIComponent(g.id)}">${info.has ? '▶ CONTINUE' : '▶ PLAY'}</a>
       </div>`;
     box.appendChild(card);
   }
@@ -101,6 +101,7 @@ function importInto(game) {
     if (!file) return;
     try {
       const snap = await readSaveFile(file);
+      if ((game.oldIds || []).includes(snap.game)) snap.game = game.id; // backup from before the rename
       if (snap.game !== game.id) {
         const other = games.find((g) => g.id === snap.game);
         if (!confirm(`This file is a ${other ? other.title : snap.game} save. Load it into ${game.title} anyway?`)) return;

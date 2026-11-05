@@ -1,7 +1,7 @@
 {
-  "name": "bens-bowls",
+  "name": "67-bowls",
   "version": "1.0.0",
-  "description": "Ben's Bowls - a game menu for Retro Bowl and Retro Bowl College with automatic saving.",
+  "description": "67 Bowls - a game menu for Retro Bowl and Retro Bowl College with automatic saving.",
   "main": "server.js",
   "private": true,
   "scripts": {

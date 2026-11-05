@@ -1,8 +1,8 @@
-# Render Blueprint for Ben's Bowls.
+# Render Blueprint for 67 Bowls.
 # Render dashboard -> New -> Blueprint -> pick this repo, and it sets everything up.
 services:
   - type: web
-    name: bens-bowls
+    name: 67-bowls
     runtime: node
     plan: free
     buildCommand: npm install

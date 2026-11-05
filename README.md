@@ -1,4 +1,4 @@
-# 🏈 Ben's Bowls
+# 🏈 67 Bowls
 
 A small website with a menu for **Retro Bowl** and **Retro Bowl College**. It saves your progress automatically and lets you download backups. If you want, you can also turn on cloud saves to play on more than one device.
 
@@ -8,8 +8,8 @@ A small website with a menu for **Retro Bowl** and **Retro Bowl College**. It sa
 |---|---|
 | `server.js` | The web server (Node + Express) |
 | `games.json` | The list of games on the menu (titles, colors) |
-| `games/retro-bowl/` | **Put the Retro Bowl game files here** |
-| `games/retro-bowl-college/` | **Put the Retro Bowl College game files here** |
+| `games/pro/` | Retro Bowl (played at `/play/pro`) |
+| `games/college/` | **Put the Retro Bowl College game files here** (played at `/play/college`) |
 | `public/` | The menu, the play page, and the save system |
 | `render.yaml` | One-click setup for Render |
 
@@ -20,8 +20,8 @@ The game files are **not included**. Retro Bowl and Retro Bowl College belong to
 Copy each game's HTML5 files into its folder so you end up with:
 
 ```
-games/retro-bowl/index.html            (plus its other files and folders)
-games/retro-bowl-college/index.html    (plus its other files and folders)
+games/pro/index.html        (plus its html5game/ folder)
+games/college/index.html    (plus its html5game/ folder)
 ```
 
 Commit and push them to GitHub. If a game's folder is empty, the menu shows "Game files not added yet" for that game.
@@ -34,11 +34,11 @@ Commit and push them to GitHub. If a game's folder is empty, the menu shows "Gam
 2. Go to <https://render.com> and sign up or log in. Signing in with GitHub is easiest.
 3. Click **New +** → **Blueprint**.
 4. Pick this repository (`retro-bowl-and-retro-bowl-college`) and click **Connect**. If it isn't listed, click "Configure account" and give Render access to the repo.
-5. Render reads `render.yaml` and shows a web service called **bens-bowls**. Click **Apply** (or **Deploy Blueprint**).
-6. Wait a minute or two for the build to finish. Your site will be at **https://bens-bowls.onrender.com**. If that name is taken, Render adds a few letters to the end, and the link appears at the top of the service page.
+5. Render reads `render.yaml` and shows a web service called **67-bowls**. Click **Apply** (or **Deploy Blueprint**).
+6. Wait a minute or two for the build to finish. Your site will be at **https://67-bowls.onrender.com**. If that name is taken, Render adds a few letters to the end, and the link appears at the top of the service page.
 
 **Doing it by hand instead of with a Blueprint:** click **New +** → **Web Service**, pick the repo, then set:
-- **Name:** `bens-bowls`
+- **Name:** `67-bowls`
 - **Language / Runtime:** Node
 - **Branch:** the branch with your game files
 - **Build Command:** `npm install`

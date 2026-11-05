@@ -1,4 +1,4 @@
-// Ben's Bowls - web server
+// 67 Bowls - web server
 // Serves the menu, the games, and (optionally) cloud saves.
 const express = require('express');
 const fs = require('fs');
@@ -18,6 +18,9 @@ const SAVES_DIR = DATA_DIR ? path.join(DATA_DIR, 'saves') : null;
 
 const GAMES = JSON.parse(fs.readFileSync(path.join(ROOT, 'games.json'), 'utf8'));
 const GAME_IDS = new Set(GAMES.map((g) => g.id));
+// Games that were renamed: old id -> current id.
+const OLD_IDS = new Map(GAMES.flatMap((g) => (g.oldIds || []).map((old) => [old, g.id])));
+const SAVE_FORMATS = new Set(['67-bowls-save', 'bens-bowls-save']);
 
 const app = express();
 app.disable('x-powered-by');
@@ -27,6 +30,19 @@ function isInstalled(game) {
 }
 
 app.get('/healthz', (req, res) => res.send('ok'));
+
+// Player page: /play/<game>. Old links (/play?game=<old id>) redirect there.
+app.get('/play/:id', (req, res, next) => {
+  if (!GAME_IDS.has(req.params.id)) return next();
+  res.sendFile(path.join(PUBLIC_DIR, 'play.html'));
+});
+app.get(['/play', '/play.html'], (req, res, next) => {
+  const want = String(req.query.game || '');
+  const id = GAME_IDS.has(want) ? want : OLD_IDS.get(want);
+  if (id) return res.redirect(301, `/play/${id}`);
+  if (want) return next();
+  res.redirect('/');
+});
 
 app.get('/api/games', (req, res) => {
   res.set('Cache-Control', 'no-store');
@@ -48,7 +64,7 @@ app.get('/api/games', (req, res) => {
 // ---------------------------------------------------------------------------
 function shimTag(gameId) {
   return (
-    `<script>window.__BENS_BOWLS_GAME=${JSON.stringify(gameId)};</script>` +
+    `<script>window.__SITE_GAME=${JSON.stringify(gameId)};</script>` +
     `<script src="/save-shim.js"></script>`
   );
 }
@@ -138,6 +154,15 @@ async function writeJsonAtomic(file, data) {
   await fsp.rename(tmp, file);
 }
 
+// Cloud saves made before a game was renamed: move them to the new id.
+async function migrateCloudDir(dir) {
+  for (const [oldId, id] of OLD_IDS) {
+    const from = path.join(dir, `${oldId}.json`);
+    const to = path.join(dir, `${id}.json`);
+    if (fs.existsSync(from) && !fs.existsSync(to)) await fsp.rename(from, to).catch(() => {});
+  }
+}
+
 const cloud = express.Router();
 cloud.use((req, res, next) => {
   res.set('Cache-Control', 'no-store');
@@ -165,6 +190,7 @@ cloud.get('/:code', async (req, res) => {
   if (!code) return res.status(400).json({ error: 'That save code is not valid.' });
   const dir = path.join(SAVES_DIR, code);
   if (!fs.existsSync(dir)) return res.status(404).json({ error: 'No saves found for that code.' });
+  await migrateCloudDir(dir);
   const games = {};
   for (const id of GAME_IDS) {
     try {
@@ -182,6 +208,7 @@ cloud.get('/:code/:game', async (req, res) => {
   if (!code || !GAME_IDS.has(req.params.game)) return res.status(400).json({ error: 'Bad request' });
   const dir = path.join(SAVES_DIR, code);
   if (!fs.existsSync(dir)) return res.status(404).json({ error: 'No saves found for that code.' });
+  await migrateCloudDir(dir);
   try {
     const text = await fsp.readFile(path.join(dir, `${req.params.game}.json`), 'utf8');
     res.type('json').send(text);
@@ -196,9 +223,10 @@ cloud.put('/:code/:game', express.json({ limit: '25mb' }), async (req, res) => {
   if (!code || !GAME_IDS.has(game)) return res.status(400).json({ error: 'Bad request' });
   const dir = path.join(SAVES_DIR, code);
   if (!fs.existsSync(dir)) return res.status(404).json({ error: 'No saves found for that code.' });
+  await migrateCloudDir(dir);
   const snap = req.body;
-  if (!snap || snap.format !== 'bens-bowls-save' || snap.game !== game) {
-    return res.status(400).json({ error: 'Not a Ben\'s Bowls save.' });
+  if (!snap || !SAVE_FORMATS.has(snap.format) || snap.game !== game) {
+    return res.status(400).json({ error: 'Not a 67 Bowls save.' });
   }
   const file = path.join(dir, `${game}.json`);
   // Never let an older save overwrite a newer one.
@@ -222,7 +250,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Ben's Bowls running on http://localhost:${PORT}`);
+  console.log(`67 Bowls running on http://localhost:${PORT}`);
   console.log(SAVES_DIR ? `Cloud saves ON (${SAVES_DIR})` : 'Cloud saves OFF (set DATA_DIR to enable)');
   for (const g of GAMES) {
     if (!g.url && !isInstalled(g)) console.log(`  ! ${g.title}: no files in games/${g.id}/ yet`);

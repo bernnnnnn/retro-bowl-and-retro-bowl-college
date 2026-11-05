@@ -2,7 +2,7 @@ import { loadGames, snapshot, isEmpty, getMeta, setMeta, restore, checkpoint, cl
 
 const $ = (sel) => document.querySelector(sel);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const id = new URLSearchParams(location.search).get('game');
+const id = decodeURIComponent(location.pathname.split('/')[2] || '');
 
 let game = null;
 let cloudOn = false;
@@ -117,7 +117,7 @@ async function start() {
     setStatus('');
     return;
   }
-  document.title = `${game.title} · Ben's Bowls`;
+  document.title = `${game.title} · 67 Bowls`;
   $('#title').textContent = game.title;
 
   if (!game.installed) {
@@ -154,7 +154,7 @@ async function start() {
 
   // The save shim inside the game tells us whenever the game saves.
   window.addEventListener('message', (e) => {
-    if (e.origin !== location.origin || !e.data || e.data.type !== 'bensbowls:changed' || e.data.game !== game.id) return;
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'site:changed' || e.data.game !== game.id) return;
     save();
   });
   // Safety net: also check every 15 seconds and whenever the tab is hidden.

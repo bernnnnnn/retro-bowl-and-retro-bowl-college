@@ -1,8 +1,10 @@
-// Ben's Bowls save library: read, back up, export, import and sync game saves.
+// 67 Bowls save library: read, back up, export, import and sync game saves.
 // The games themselves save into this site's browser storage (namespaced by
 // save-shim.js); this file works with that data from the menu and player pages.
 
-const FORMAT = 'bens-bowls-save';
+const FORMAT = '67-bowls-save';
+const OLD_FORMATS = ['bens-bowls-save']; // backups made before the rename still load
+const isSaveFormat = (f) => f === FORMAT || OLD_FORMATS.includes(f);
 const ns = (id) => `bb:${id}:`;
 const metaKey = (id) => `bb-meta:${id}`;
 const idbListKey = (id) => `bb-idb:${id}`;
@@ -226,7 +228,7 @@ export function isEmpty(snap) {
 
 /** Replace this game's save data with a snapshot. Only call while the game is NOT running. */
 export async function restore(snap) {
-  if (!snap || snap.format !== FORMAT) throw new Error('That file is not a Ben\'s Bowls save.');
+  if (!snap || !isSaveFormat(snap.format)) throw new Error('That file is not a 67 Bowls save.');
   const id = snap.game;
   await wipe(id, { keepMeta: true });
   for (const [k, v] of Object.entries(snap.localStorage || {})) localStorage.setItem(ns(id) + k, v);
@@ -285,8 +287,8 @@ export function downloadSave(snap, title) {
 
 export async function readSaveFile(file) {
   let snap;
-  try { snap = JSON.parse(await file.text()); } catch { throw new Error('That file is not a Ben\'s Bowls save.'); }
-  if (!snap || snap.format !== FORMAT || !snap.game) throw new Error('That file is not a Ben\'s Bowls save.');
+  try { snap = JSON.parse(await file.text()); } catch { throw new Error('That file is not a 67 Bowls save.'); }
+  if (!snap || !isSaveFormat(snap.format) || !snap.game) throw new Error('That file is not a 67 Bowls save.');
   return snap;
 }
 
@@ -336,9 +338,32 @@ export const cloud = {
   },
 };
 
+/**
+ * Games used to have other ids (e.g. "retro-bowl"). Move any save stored under
+ * an old id to the game's current id, once, so nobody loses progress.
+ */
+export async function migrateOldSaves(games) {
+  for (const g of games) {
+    for (const oldId of g.oldIds || []) {
+      const old = await snapshot(oldId);
+      if (isEmpty(old)) continue;
+      if (isEmpty(await snapshot(g.id))) {
+        const meta = getMeta(oldId);
+        old.game = g.id;
+        old.updatedAt = meta.updatedAt || Date.now();
+        await restore(old);
+        setMeta(g.id, { ...meta, ...getMeta(g.id) });
+      }
+      await wipe(oldId);
+    }
+  }
+}
+
 export async function loadGames() {
   const r = await fetch('/api/games');
-  return r.json();
+  const data = await r.json();
+  try { await migrateOldSaves(data.games); } catch (e) { console.warn('Could not move old saves', e); }
+  return data;
 }
 
 export function timeAgo(ts) {

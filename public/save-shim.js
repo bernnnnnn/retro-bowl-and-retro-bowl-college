@@ -1,5 +1,5 @@
 /*
- * Ben's Bowls save shim. The server injects this into every game page before
+ * 67 Bowls save shim. The server injects this into every game page before
  * the game's own scripts run.
  *
  * It does two things:
@@ -7,12 +7,12 @@
  *     website, so without this they could overwrite each other's saves.
  *     localStorage keys become "bb:<game>:<key>" and IndexedDB databases become
  *     "bb:<game>:<name>". The game never notices.
- *  2. Tells the Ben's Bowls player page every time the game saves, so it can
+ *  2. Tells the 67 Bowls player page every time the game saves, so it can
  *     show "Saved" and back the save up.
  */
 (function () {
   'use strict';
-  var GAME = window.__BENS_BOWLS_GAME;
+  var GAME = window.__SITE_GAME;
   if (!GAME) return;
   var P = 'bb:' + GAME + ':';
   var IDB_LIST = 'bb-idb:' + GAME;
@@ -28,7 +28,7 @@
   function post() {
     try {
       if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: 'bensbowls:changed', game: GAME }, location.origin);
+        window.parent.postMessage({ type: 'site:changed', game: GAME }, location.origin);
       }
     } catch (e) {}
   }

@@ -1,12 +1,14 @@
 [
   {
-    "id": "retro-bowl",
+    "id": "pro",
+    "oldIds": ["retro-bowl"],
     "title": "Retro Bowl",
     "tagline": "Run a pro team. Win the big game.",
     "color": "#e94f37"
   },
   {
-    "id": "retro-bowl-college",
+    "id": "college",
+    "oldIds": ["retro-bowl-college"],
     "title": "Retro Bowl College",
     "tagline": "Recruit, study, and win on campus.",
     "color": "#3a86ff"
